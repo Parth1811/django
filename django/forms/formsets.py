@@ -41,6 +41,18 @@ class ManagementForm(Form):
         self.base_fields[MAX_NUM_FORM_COUNT] = IntegerField(required=False, widget=HiddenInput)
         super().__init__(*args, **kwargs)
 
+class FormSetMeta(type):
+
+    def __new__(cls, name, bases, attrs):
+        print ("--------In Here-----------", cls.__qualname__)
+        # try:
+        #     parents = [b for b in bases if issubclass(b, InlineFormSet)]
+        # except NameError:
+        #     # we are defining InlineFormSet ourselves
+        #     parents = None
+
+        new_class = super().__new__(cls, name, bases, attrs)
+        return new_class
 
 @html_safe
 class BaseFormSet:
@@ -430,6 +442,10 @@ class BaseFormSet:
         forms = ' '.join(form.as_ul() for form in self)
         return mark_safe(str(self.management_form) + '\n' + forms)
 
+class FormSet(BaseFormSet, metaclass= FormSetMeta):
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
+                 initial=None, error_class=ErrorList, form_kwargs=None):
+        super().__init__(data, files, auto_id, prefix, initial, error_class, form_kwargs)
 
 def formset_factory(form, formset=BaseFormSet, extra=1, can_order=False,
                     can_delete=False, max_num=None, validate_max=False,
