@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.forms import Form
 from django.forms.fields import BooleanField, IntegerField
 from django.forms.utils import ErrorList
@@ -478,10 +478,32 @@ class FormSetMeta(type):
         print (name)
         print (bases)
         print (attrs)
+
+        if not "form" in attrs:
+            raise ImproperlyConfigured("The FormSet is missing the form argument")
+
+        default_attrs = {
+            'extra': 1,
+            'can_order': False,
+            'can_delete': False,
+            'min_num': DEFAULT_MIN_NUM,
+            'max_num': DEFAULT_MAX_NUM,
+            'absolute_max': DEFAULT_MAX_NUM + DEFAULT_MAX_NUM,
+            'validate_min': False,
+            'validate_max': False,
+        }
+
+        for key, value in default_attrs.items():
+            if key not in attrs.keys():
+                attrs.update({key:value})
+
+
         new_class = super().__new__(cls, name, bases, attrs)
         return new_class
 
 class FormSet(BaseFormSet, metaclass= FormSetMeta):
+    form = None
+
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
                 initial=None, error_class=ErrorList, form_kwargs=None):
         super().__init__(data, files, auto_id, prefix, initial, error_class, form_kwargs)
