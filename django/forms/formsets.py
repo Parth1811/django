@@ -467,18 +467,15 @@ def all_valid(formsets):
 
 
 class FormSetMeta(type):
-    def __new__(cls, name, bases, attrs):
-        print ("--------In Here-----------", cls.__qualname__)
-        # try:
-        #     parents = [b for b in bases if issubclass(b, InlineFormSet)]
-        # except NameError:
-        #     # we are defining InlineFormSet ourselves
-        #     parents = None
-        print (cls)
-        print (name)
-        print (bases)
-        print (attrs)
+    """
+    Meta class for creating formsets using Declarative Syntax.
+    """
 
+    def __new__(cls, name, bases, attrs):
+        """
+        Initialize the attributes given to the FormSet class and adds the
+        missing required argument and sets them to default values.
+        """
         if not "form" in attrs:
             raise ImproperlyConfigured("The FormSet is missing the form argument")
 
@@ -502,6 +499,9 @@ class FormSetMeta(type):
         return new_class
 
 class FormSet(BaseFormSet, metaclass= FormSetMeta):
+    """
+    Base class for which can be used to create formset classes
+    """
     form = None
 
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
