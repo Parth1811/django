@@ -10,7 +10,7 @@ from django.core.exceptions import (
 )
 from django.forms.fields import ChoiceField, Field
 from django.forms.forms import BaseForm, DeclarativeFieldsMetaclass
-from django.forms.formsets import BaseFormSet, formset_factory
+from django.forms.formsets import BaseFormSet, formset_factory, FormSet, FormSetMeta
 from django.forms.utils import ErrorList
 from django.forms.widgets import (
     HiddenInput, MultipleHiddenInput, SelectMultiple,
@@ -880,6 +880,18 @@ def modelformset_factory(model, form=ModelForm, formfield_callback=None,
     FormSet.model = model
     return FormSet
 
+class ModelFormSetMeta(FormSetMeta):
+    def __new__(cls, name, bases, attrs):
+
+        form = None
+        if attrs.get("model") != None:
+            form = modelform_factory(attrs.get("model"), fields="__all__")
+
+        attrs.update({'form': form})
+        return super(ModelFormSetMeta, cls).__new__(cls, name, bases, attrs)
+
+class ModelFormSet(BaseModelFormSet, FormSet, metaclass=ModelFormSetMeta):
+    pass
 
 # InlineFormSets #############################################################
 

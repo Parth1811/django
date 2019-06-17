@@ -476,10 +476,9 @@ class FormSetMeta(type):
         Initialize the attributes given to the FormSet class and adds the
         missing required argument and sets them to default values.
         """
-        if not "form" in attrs:
-            raise ImproperlyConfigured("The FormSet is missing the form argument")
 
         default_attrs = {
+            'form': attrs.get('form') or None,
             'extra': 1,
             'can_order': False,
             'can_delete': False,
@@ -495,7 +494,7 @@ class FormSetMeta(type):
                 attrs.update({key:value})
 
 
-        new_class = super().__new__(cls, name, bases, attrs)
+        new_class = super(FormSetMeta, cls).__new__(cls, name, bases, attrs)
         return new_class
 
 class FormSet(BaseFormSet, metaclass= FormSetMeta):
