@@ -1091,6 +1091,45 @@ def inlineformset_factory(parent_model, model, form=ModelForm,
     FormSet.fk = fk
     return FormSet
 
+class InlineFormSetMeta(ModelFormSetMeta):
+
+    def __new__(cls, name, bases, attrs):
+        try:
+            parents = [b for b in bases if issubclass(b, InlineFormSet)]
+        except NameError:
+            # we are defining InlineFormSet ourselves
+            parents = None
+
+        new_class = super(InlineFormSetMeta, cls).__new__(cls, name,
+                            bases, attrs)
+        if not parents:
+            return new_class
+
+        # Find parent model
+        parent_model = attrs.get('parent_model', None)
+        fk_name = attrs.get('fk_name', None)
+        form = attrs.get('form', None)
+        for base in parents:
+            parent_model = parent_model or getattr(base, 'parent_model', None)
+            fk_name = fk_name or getattr(base, 'fk_name', None)
+            form = form or getattr(base, 'form', None)
+
+        # enforce a max_num=1 when the foreign key
+        # to the parent model is unique.
+        if form and parent_model:
+            new_class.fk = _get_foreign_key(parent_model,
+                form._meta.model, fk_name=fk_name)
+            if new_class.fk.unique:
+                new_class.max_num = 1
+
+        new_class.parent_model = parent_model
+        new_class.fk_name = fk_name
+        new_class.form = form
+
+        return new_class
+
+class InlineFormSet(BaseInlineFormSet, ModelFormSet, metaclass=InlineFormSetMeta):
+    pass
 
 # Fields #####################################################################
 
