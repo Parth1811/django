@@ -886,11 +886,34 @@ def modelformset_factory(model, form=ModelForm, formfield_callback=None,
 class ModelFormSetMeta(FormSetMeta):
     def __new__(cls, name, bases, attrs):
 
-        form = None
-        if attrs.get("model") is not None:
-            form = modelform_factory(attrs.get("model"), fields="__all__")
+        default_modelform_factory_attrs = [
+            "fields",
+            "exclude",
+            "formfield_callback",
+            "widgets",
+            "localized_fields",
+            "labels",
+            "help_texts",
+            "error_messages",
+            "field_classes"
+        ]
 
-        attrs.update({'form': form})
+        kwargs = {}
+        for key in default_modelform_factory_attrs:
+            if key in attrs:
+                kwargs.update({key: attrs.get(key)})
+                attrs.pop(key)
+
+        form = ModelForm
+        if attrs.get("form") is not None:
+            kwargs.update({"form": attrs.get("form")})
+        else:
+            kwargs.update({"form": form})
+
+        if attrs.get("model") is not None:
+            form = modelform_factory(attrs.get("model"), **kwargs)
+            attrs.update({'form': form})
+
         return super(ModelFormSetMeta, cls).__new__(cls, name, bases, attrs)
 
 

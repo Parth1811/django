@@ -477,6 +477,10 @@ class FormSetMeta(type):
         Initialize the attributes given to the FormSet class and adds the
         missing required argument and sets them to default values.
         """
+        if attrs.get("min_num") is None:
+            attrs["min_num"] = DEFAULT_MIN_NUM
+        if attrs.get("max_num") is None:
+            attrs["max_num"] = DEFAULT_MAX_NUM
 
         default_attrs = {
             'form': attrs.get('form') or None,
@@ -485,7 +489,7 @@ class FormSetMeta(type):
             'can_delete': False,
             'min_num': DEFAULT_MIN_NUM,
             'max_num': DEFAULT_MAX_NUM,
-            'absolute_max': DEFAULT_MAX_NUM + DEFAULT_MAX_NUM,
+            'absolute_max': attrs["max_num"] + DEFAULT_MAX_NUM,
             'validate_min': False,
             'validate_max': False,
         }
