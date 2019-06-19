@@ -6,7 +6,9 @@ from django.forms import (
     BaseForm, CharField, DateField, FileField, Form, IntegerField,
     SplitDateTimeField, ValidationError, formsets,
 )
-from django.forms.formsets import BaseFormSet, all_valid, formset_factory, FormSet
+from django.forms.formsets import (
+    BaseFormSet, FormSet, all_valid, formset_factory,
+)
 from django.forms.utils import ErrorList
 from django.forms.widgets import HiddenInput
 from django.test import SimpleTestCase

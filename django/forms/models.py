@@ -10,7 +10,9 @@ from django.core.exceptions import (
 )
 from django.forms.fields import ChoiceField, Field
 from django.forms.forms import BaseForm, DeclarativeFieldsMetaclass
-from django.forms.formsets import BaseFormSet, formset_factory, FormSet, FormSetMeta
+from django.forms.formsets import (
+    BaseFormSet, FormSet, FormSetMeta, formset_factory,
+)
 from django.forms.utils import ErrorList
 from django.forms.widgets import (
     HiddenInput, MultipleHiddenInput, SelectMultiple,
