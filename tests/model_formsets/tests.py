@@ -7,8 +7,8 @@ from django import forms
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import models
 from django.forms.models import (
-    BaseModelFormSet, _get_foreign_key, inlineformset_factory,
-    modelformset_factory,
+    BaseModelFormSet, InlineFormSet, ModelFormSet, _get_foreign_key,
+    inlineformset_factory, modelformset_factory,
 )
 from django.http import QueryDict
 from django.test import TestCase, skipUnlessDBFeature
@@ -23,8 +23,14 @@ from .models import (
 
 
 class DeletionTests(TestCase):
+    def make_model_formset(self):
+        return modelformset_factory(Poet, fields="__all__", can_delete=True)
+
+    def make_inline_formset(self):
+        return inlineformset_factory(Poet, Poem, fields="__all__", can_delete=True)
+
     def test_deletion(self):
-        PoetFormSet = modelformset_factory(Poet, fields="__all__", can_delete=True)
+        PostFormSet = self.make_model_formset()
         poet = Poet.objects.create(name='test')
         data = {
             'form-TOTAL_FORMS': '1',
@@ -34,7 +40,7 @@ class DeletionTests(TestCase):
             'form-0-name': 'test',
             'form-0-DELETE': 'on',
         }
-        formset = PoetFormSet(data, queryset=Poet.objects.all())
+        formset = PostFormSet(data, queryset=Poet.objects.all())
         formset.save(commit=False)
         self.assertEqual(Poet.objects.count(), 1)
 
@@ -47,7 +53,7 @@ class DeletionTests(TestCase):
         Make sure that an add form that is filled out, but marked for deletion
         doesn't cause validation errors.
         """
-        PoetFormSet = modelformset_factory(Poet, fields="__all__", can_delete=True)
+        PoetFormSet = self.make_model_formset()
         poet = Poet.objects.create(name='test')
         # One existing untouched and two new unvalid forms
         data = {
@@ -81,7 +87,7 @@ class DeletionTests(TestCase):
         Make sure that a change form that is filled out, but marked for deletion
         doesn't cause validation errors.
         """
-        PoetFormSet = modelformset_factory(Poet, fields="__all__", can_delete=True)
+        PoetFormSet = self.make_model_formset()
         poet = Poet.objects.create(name='test')
         data = {
             'form-TOTAL_FORMS': '1',
@@ -107,7 +113,7 @@ class DeletionTests(TestCase):
         poet = Poet.objects.create(name='test')
         poem = Poem.objects.create(name='Brevity is the soul of wit', poet=poet)
 
-        PoemFormSet = inlineformset_factory(Poet, Poem, fields="__all__", can_delete=True)
+        PoemFormSet = self.make_inline_formset()
 
         # Simulate deletion of an object that doesn't exist in the database
         data = {
@@ -131,6 +137,25 @@ class DeletionTests(TestCase):
         self.assertEqual(Poem.objects.get(pk=poem.pk).name, "foo")
         self.assertEqual(poet.poem_set.count(), 1)
         self.assertFalse(Poem.objects.filter(pk=poem.pk + 1).exists())
+
+
+class DeclarativeDeletionTests(DeletionTests):
+    class DeclarativePostFormSet(ModelFormSet):
+        model = Post
+        fields = "__all__"
+        can_delete = True
+
+    class DeclarativeInlinePostFormSet(InlineFormSet):
+        parent_model = Poet
+        model = Poem
+        fields = "__all__"
+        can_delete = True
+
+    def make_model_formset(self):
+        return self.DeclarativePostFormSet
+
+    def make_inline_formset(self):
+        return self.DeclarativeInlinePostFormSet
 
 
 class ModelFormsetTest(TestCase):
