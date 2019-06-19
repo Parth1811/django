@@ -1,4 +1,4 @@
-from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.core.exceptions import ValidationError
 from django.forms import Form
 from django.forms.fields import BooleanField, IntegerField
 from django.forms.utils import ErrorList
@@ -40,6 +40,7 @@ class ManagementForm(Form):
         self.base_fields[MIN_NUM_FORM_COUNT] = IntegerField(required=False, widget=HiddenInput)
         self.base_fields[MAX_NUM_FORM_COUNT] = IntegerField(required=False, widget=HiddenInput)
         super().__init__(*args, **kwargs)
+
 
 @html_safe
 class BaseFormSet:
@@ -463,7 +464,7 @@ def all_valid(formsets):
         valid &= formset.is_valid()
     return valid
 
-########### Declarative FormSet ##################
+# Declarative FormSet ################################
 
 
 class FormSetMeta(type):
@@ -491,18 +492,18 @@ class FormSetMeta(type):
 
         for key, value in default_attrs.items():
             if key not in attrs.keys():
-                attrs.update({key:value})
-
+                attrs.update({key: value})
 
         new_class = super(FormSetMeta, cls).__new__(cls, name, bases, attrs)
         return new_class
 
-class FormSet(BaseFormSet, metaclass= FormSetMeta):
+
+class FormSet(BaseFormSet, metaclass=FormSetMeta):
     """
     Base class for which can be used to create formset classes
     """
     form = None
 
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
-                initial=None, error_class=ErrorList, form_kwargs=None):
+                 initial=None, error_class=ErrorList, form_kwargs=None):
         super().__init__(data, files, auto_id, prefix, initial, error_class, form_kwargs)

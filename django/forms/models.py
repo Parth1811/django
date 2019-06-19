@@ -882,20 +882,23 @@ def modelformset_factory(model, form=ModelForm, formfield_callback=None,
     FormSet.model = model
     return FormSet
 
+
 class ModelFormSetMeta(FormSetMeta):
     def __new__(cls, name, bases, attrs):
 
         form = None
-        if attrs.get("model") != None:
+        if attrs.get("model") is not None:
             form = modelform_factory(attrs.get("model"), fields="__all__")
 
         attrs.update({'form': form})
         return super(ModelFormSetMeta, cls).__new__(cls, name, bases, attrs)
 
+
 class ModelFormSet(BaseModelFormSet, FormSet, metaclass=ModelFormSetMeta):
     pass
 
 # InlineFormSets #############################################################
+
 
 class BaseInlineFormSet(BaseModelFormSet):
     """A formset for child objects related to a parent."""
@@ -1093,6 +1096,7 @@ def inlineformset_factory(parent_model, model, form=ModelForm,
     FormSet.fk = fk
     return FormSet
 
+
 class InlineFormSetMeta(ModelFormSetMeta):
 
     def __new__(cls, name, bases, attrs):
@@ -1102,8 +1106,7 @@ class InlineFormSetMeta(ModelFormSetMeta):
             # we are defining InlineFormSet ourselves
             parents = None
 
-        new_class = super(InlineFormSetMeta, cls).__new__(cls, name,
-                            bases, attrs)
+        new_class = super(InlineFormSetMeta, cls).__new__(cls, name, bases, attrs)
         if not parents:
             return new_class
 
@@ -1119,8 +1122,7 @@ class InlineFormSetMeta(ModelFormSetMeta):
         # enforce a max_num=1 when the foreign key
         # to the parent model is unique.
         if form and parent_model:
-            new_class.fk = _get_foreign_key(parent_model,
-                form._meta.model, fk_name=fk_name)
+            new_class.fk = _get_foreign_key(parent_model, form._meta.model, fk_name=fk_name)
             if new_class.fk.unique:
                 new_class.max_num = 1
 
@@ -1130,10 +1132,12 @@ class InlineFormSetMeta(ModelFormSetMeta):
 
         return new_class
 
+
 class InlineFormSet(BaseInlineFormSet, ModelFormSet, metaclass=InlineFormSetMeta):
     pass
 
 # Fields #####################################################################
+
 
 class InlineForeignKeyField(Field):
     """

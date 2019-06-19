@@ -21,8 +21,10 @@ class Choice(Form):
 
 ChoiceFormSet = formset_factory(Choice)
 
+
 class DeclarativeChoiceFormSet(FormSet):
     form = Choice
+
 
 class FavoriteDrinkForm(Form):
     name = CharField()
@@ -1317,6 +1319,7 @@ class AllValidTests(SimpleTestCase):
         expected_errors = [{'votes': ['This field is required.']}, {'votes': ['This field is required.']}]
         self.assertEqual(formset1._errors, expected_errors)
         self.assertEqual(formset2._errors, expected_errors)
+
 
 class DeclarativeFormSetTestCase(FormsFormsetTestCase):
 
