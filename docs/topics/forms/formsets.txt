@@ -46,6 +46,14 @@ Formsets can also be indexed into, which returns the corresponding form. If you
 override ``__iter__``, you will need to also override ``__getitem__`` to have
 matching behavior.
 
+Using ``FormSet`` to make the formset
+=====================================
+
+.. class:: FormSet
+
+    You can use the ``FormSet`` class to declare a formset in same way you declare models.
+    This is alternative method to using ``formset_factory`` to make the formset class.
+
 .. _formsets-initial-data:
 
 Using initial data with a formset

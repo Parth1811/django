@@ -1,12 +1,33 @@
-=================
-Formset Functions
-=================
+=======
+Formset
+=======
 
 Formset API reference. For introductory material about formsets, see the
 :doc:`/topics/forms/formsets` topic guide.
 
 .. module:: django.forms.formsets
    :synopsis: Django's functions for building formsets.
+
+``FormSet class reference``
+===========================
+
+``objects``
+-----------
+
+.. attribute:: FromSet.objects
+
+    The :class:`~django.forms.formsets.FormSet` class is used to create the
+    ``Formset`` from the given ``form`` using a declarative syntax.
+    See the following example which shows how to create AuthorFormSet from
+    AuthorForm::
+
+        from django.forms import formsets
+
+        class AuthorFormSet(formsets.FormSet):
+            # adding a form field is must
+            form = AuthorForm
+
+    For more details on features of :class:`~django.forms.formsets.FormSet` click here.
 
 ``formset_factory``
 ===================
