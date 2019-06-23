@@ -27,8 +27,6 @@ Formset API reference. For introductory material about formsets, see the
             # adding a form field is must
             form = AuthorForm
 
-    For more details on features of :class:`~django.forms.formsets.FormSet` click here.
-
 ``formset_factory``
 ===================
 
